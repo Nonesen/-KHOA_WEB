@@ -1,4 +1,14 @@
 <?php
+// === QUAN TRỌNG NHẤT: KHỞI TẠO SESSION Ở ĐẦU FILE ===
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Định nghĩa BASE_URL nếu chưa có
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/webbanhang');
+}
+
 // Tính tổng số lượng sản phẩm trong giỏ hàng
 $cart_count = 0;
 if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
@@ -57,7 +67,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top py-3">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/webbanhang/index.php?url=product">
+            <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_URL; ?>/index.php?url=product">
                 <i class="fas fa-glass-whiskey me-2 fs-3"></i>
                 <span class="logo-text">Fresh<span class="text-warning">Drink</span></span>
             </a>
@@ -65,7 +75,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <form action="/webbanhang/index.php" method="GET" class="mx-auto d-flex w-50 position-relative">
+                <form action="<?php echo BASE_URL; ?>/index.php" method="GET" class="mx-auto d-flex w-50 position-relative">
                     <input type="hidden" name="url" value="product/search">
                     <input type="text" name="keyword" class="search-bar form-control px-4"
                         placeholder="Tìm nước uống bạn thích..."
@@ -76,7 +86,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 </form>
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item">
-                        <a href="/webbanhang/index.php?url=product/cart" class="nav-link position-relative px-3">
+                        <a href="<?php echo BASE_URL; ?>/index.php?url=product/cart" class="nav-link position-relative px-3">
                             <i class="fas fa-shopping-basket fs-4 text-white"></i>
                             <?php if ($cart_count > 0): ?>
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-cart">

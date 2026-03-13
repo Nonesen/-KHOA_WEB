@@ -1,5 +1,4 @@
 <?php include __DIR__ . '/../shaders/header.php'; ?>
-
 <style>
     body {
         background-color: #f4f6f8;
@@ -100,69 +99,87 @@
         color: #d70018;
     }
 </style>
-
 <div class="container mt-4 mb-5">
     <div class="cart-container">
         <div class="d-flex justify-content-between align-items-center cart-header">
-            <a href="/webbanhang/index.php?url=product" class="text-danger text-decoration-none fw-bold">
+            <a href="<?php echo BASE_URL; ?>/index.php?url=product" class="text-danger text-decoration-none fw-bold">
                 <i class="fas fa-chevron-left"></i> Trở về
             </a>
             <h5 class="text-danger fw-bold m-0 text-center flex-grow-1">Giỏ hàng</h5>
             <div style="width: 70px;"></div>
         </div>
-
         <?php
-        // Vì controller đã truyền $cart và $total, nhưng để an toàn vẫn fallback
         $cart = $cart ?? $_SESSION['cart'] ?? [];
-        $total = $total ?? 0;
+        $total = 0;
         ?>
-
         <?php if (empty($cart)): ?>
             <div class="text-center py-5">
                 <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
                 <h5 class="text-secondary">Giỏ hàng của bạn đang trống</h5>
                 <p class="text-muted">Hãy thêm một vài đồ uống yêu thích nhé!</p>
-                <a href="/webbanhang/index.php?url=product" class="btn btn-continue fw-bold mt-3 px-4 py-2">
+                <a href="<?php echo BASE_URL; ?>/index.php?url=product" class="btn btn-continue fw-bold mt-3 px-4 py-2">
                     <i class="fas fa-arrow-left me-2"></i>Chọn đồ uống
                 </a>
             </div>
         <?php else: ?>
             <?php foreach ($cart as $id => $item):
                 $item_total = ($item['price'] ?? 0) * ($item['quantity'] ?? 1);
-                $total += $item_total; // cập nhật lại nếu cần
+                $total += $item_total;
             ?>
                 <div class="cart-item position-relative">
-                    <a href="/webbanhang/index.php?url=product/removeFromCart&id=<?php echo $id; ?>" class="btn-remove" title="Xóa sản phẩm">
+                    <a href="<?php echo BASE_URL; ?>/index.php?url=product/removeFromCart&id=<?php echo $id; ?>" class="btn-remove" title="Xóa sản phẩm">
                         <i class="fas fa-times"></i>
                     </a>
-
                     <div class="d-flex align-items-center">
                         <?php
-                        $imgSrc = !empty($item['image']) ? '/webbanhang/' . $item['image'] : 'https://via.placeholder.com/80?text=Drink';
+                        // ==================== XỬ LÝ PATH ẢNH - HỖ TRỢ MỌI TRƯỜNG HỢP ====================
+                        $raw = $item['image'] ?? '';
+                        if (!empty($raw)) {
+                            // Trường hợp 1: URL đầy đủ (http/https)
+                            if (strpos($raw, 'http') === 0) {
+                                $imgSrc = $raw;
+                            }
+                            // Trường hợp 2: Đã có /webbanhang/
+                            elseif (strpos($raw, '/webbanhang/') === 0) {
+                                $imgSrc = $raw;
+                            }
+                            // Trường hợp 3: Bắt đầu bằng /
+                            elseif (strpos($raw, '/') === 0) {
+                                $imgSrc = '/webbanhang' . $raw;
+                            }
+                            // Trường hợp 4: Path tương đối (uploads/xxx.jpg)
+                            else {
+                                $imgSrc = BASE_URL . '/' . $raw;
+                            }
+                        } else {
+                            // Không có ảnh
+                            $imgSrc = 'https://via.placeholder.com/80?text=Drink';
+                        }
+                        // ============================================================================
                         ?>
-                        <img src="<?php echo $imgSrc; ?>" alt="<?php echo htmlspecialchars($item['name'] ?? ''); ?>" style="width:80px; height:80px; object-fit:cover; border-radius:8px;" class="me-3">
-
+                        <img src="<?php echo htmlspecialchars($imgSrc); ?>"
+                            alt="<?php echo htmlspecialchars($item['name'] ?? ''); ?>"
+                            style="width:80px; height:80px; object-fit:cover; border-radius:8px;"
+                            class="me-3"
+                            onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=Drink'">
                         <div class="flex-grow-1">
                             <h6 class="fw-bold mb-1"><?php echo htmlspecialchars($item['name'] ?? ''); ?></h6>
                             <div class="text-danger fw-bold">
                                 <?php echo number_format($item['price'] ?? 0, 0, ',', '.'); ?> ₫
                             </div>
-
                             <div class="d-flex align-items-center mb-2 mt-2">
                                 <span class="me-2 small">Số lượng:</span>
                                 <div class="d-flex align-items-center">
-                                    <a href="/webbanhang/index.php?url=product/updateCart&id=<?php echo $id; ?>&action=decrease" class="qty-btn">-</a>
+                                    <a href="<?php echo BASE_URL; ?>/index.php?url=product/updateCart&id=<?php echo $id; ?>&action=decrease" class="qty-btn">-</a>
                                     <input type="text" class="qty-input" value="<?php echo $item['quantity'] ?? 1; ?>" readonly>
-                                    <a href="/webbanhang/index.php?url=product/updateCart&id=<?php echo $id; ?>&action=increase" class="qty-btn">+</a>
+                                    <a href="<?php echo BASE_URL; ?>/index.php?url=product/updateCart&id=<?php echo $id; ?>&action=increase" class="qty-btn">+</a>
                                 </div>
                             </div>
-
                             <div class="promo-box">
                                 <div class="fw-bold mb-1">- Khuyến mãi:</div>
                                 <div class="text-success small">• Mua 3 tặng 1 (áp dụng cho một số sản phẩm)</div>
                             </div>
                         </div>
-
                         <div class="text-end ms-3">
                             <div class="fw-bold text-danger fs-5">
                                 <?php echo number_format($item_total, 0, ',', '.'); ?> ₫
@@ -171,22 +188,19 @@
                     </div>
                 </div>
             <?php endforeach; ?>
-
             <div class="mt-4 pt-3 border-top">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="fw-bold fs-6">Tổng tiền tạm tính:</span>
                     <span class="text-danger fw-bold fs-5"><?php echo number_format($total, 0, ',', '.'); ?> ₫</span>
                 </div>
-
-                <a href="/webbanhang/index.php?url=product/checkout" class="btn btn-checkout w-100 fw-bold py-3 mb-2 text-uppercase d-block text-center text-decoration-none">
+                <a href="<?php echo BASE_URL; ?>/index.php?url=product/checkout" class="btn btn-checkout w-100 fw-bold py-3 mb-2 text-uppercase d-block text-center text-decoration-none">
                     Tiến hành đặt hàng
                 </a>
-                <a href="/webbanhang/index.php?url=product" class="btn btn-continue w-100 fw-bold py-3 text-uppercase d-block text-center text-decoration-none">
+                <a href="<?php echo BASE_URL; ?>/index.php?url=product" class="btn btn-continue w-100 fw-bold py-3 text-uppercase d-block text-center text-decoration-none">
                     Chọn thêm đồ uống
                 </a>
             </div>
         <?php endif; ?>
     </div>
 </div>
-
 <?php include __DIR__ . '/../shaders/footer.php'; ?>

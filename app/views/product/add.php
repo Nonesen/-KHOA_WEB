@@ -1,4 +1,4 @@
-<?php include __DIR__ . '/../shaders/header.php'; ?>
+<?php include __DIR__ . '/../includes/header.php'; ?>
 
 <div class="container mt-4 mb-5">
     <div class="row justify-content-center">

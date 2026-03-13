@@ -4,6 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// 2. Định nghĩa BASE_URL - QUAN TRỌNG CHO ĐƯỜNG DẪN ẢNH
+define('BASE_URL', '/webbanhang');
+
 // Định nghĩa thư mục gốc để nạp file không bị lỗi đường dẫn
 define('ROOT_PATH', __DIR__ . '/');
 
@@ -26,7 +29,6 @@ $action = (!empty($url[1])) ? $url[1] : 'index';
 
 // 5. Kiểm tra xem file Controller có tồn tại không
 $controllerFile = ROOT_PATH . 'app/controllers/' . $controllerName . '.php';
-
 if (!file_exists($controllerFile)) {
     die("Lỗi 404: Không tìm thấy Controller '$controllerName' tại đường dẫn: $controllerFile");
 }
@@ -43,7 +45,6 @@ if (!method_exists($controller, $action)) {
 
 // 7. Lấy các tham số truyền vào hàm (nếu có, ví dụ ID sản phẩm)
 $params = array_slice($url, 2);
-
 // Bổ sung xử lý: Nếu tham số truyền qua dạng ?url=product/addToCart&id=5
 if (empty($params) && isset($_GET['id'])) {
     $params[] = $_GET['id'];
